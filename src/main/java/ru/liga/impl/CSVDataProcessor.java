@@ -5,13 +5,12 @@ import ru.liga.api.IDataProcessor;
 import ru.liga.api.ProcessingException;
 
 import java.text.ParseException;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 public class CSVDataProcessor implements IDataProcessor<
         CSVRecord,
-        Map.Entry<Long, Double>> {
+        Map.Entry<LocalDate, Double>> {
 
     private CSVRecordReader parser;
 
@@ -20,23 +19,22 @@ public class CSVDataProcessor implements IDataProcessor<
     }
 
     @Override
-    public Iterable<Map.Entry<Long, Double>> getAll(Iterable<CSVRecord> records) throws ProcessingException {
+    public List<Map.Entry<LocalDate, Double>> getAll(Iterable<CSVRecord> records) throws ProcessingException {
 
-        ArrayList<Map.Entry<Long, Double>> recs = new ArrayList<>();
+        ArrayList<Map.Entry<LocalDate, Double>> recs = new ArrayList<>();
 
         try {
             for (CSVRecord record : records) {
-                Map.Entry<Long, Double> pair = parser.parse(record);
-                long date = pair.getKey();
+                Map.Entry<LocalDate, Double> pair = parser.parse(record);
+                LocalDate date = pair.getKey();
                 double tick = pair.getValue();
-                recs.add(new AbstractMap.SimpleEntry<Long, Double>(date, tick));
+                recs.add(new AbstractMap.SimpleEntry<>(date, tick));
             }
             return recs;
         } catch (ParseException e) {
+            e.printStackTrace();
             throw new ProcessingException();
         }
     }
-
-
 
 }

@@ -1,5 +1,7 @@
 package ru.liga.api;
 
+import java.util.List;
+
 public interface IDataProcessor<RecordType, OutputType> {
-    Iterable<OutputType> getAll(Iterable<RecordType> records) throws ProcessingException;
+    List<OutputType> getAll(Iterable<RecordType> records) throws ProcessingException;
 }

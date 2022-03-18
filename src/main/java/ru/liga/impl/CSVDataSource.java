@@ -6,16 +6,17 @@ import ru.liga.api.IDataSource;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class CSVDataSource implements IDataSource<CSVRecord> {
 
     private CSVFormat format;
+    private List<CSVRecord> records;
 
     public CSVDataSource() {
         format = CSVFormat.DEFAULT
                 .builder()
-                .setHeader("data", "curs", "cdx")
+                .setHeader("nominal", "data", "curs", "cdx")
                 .setSkipHeaderRecord(true)
                 .setDelimiter(";")
                 .build();
@@ -23,6 +24,6 @@ public class CSVDataSource implements IDataSource<CSVRecord> {
 
     @Override
     public Iterable<CSVRecord> getAll(Reader reader) throws IOException {
-        return format.parse(reader).stream().limit(7).collect(Collectors.toList());
+        return format.parse(reader);
     }
 }

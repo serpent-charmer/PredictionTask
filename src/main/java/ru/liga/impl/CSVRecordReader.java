@@ -5,23 +5,25 @@ import org.apache.commons.csv.CSVRecord;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.AbstractMap;
+import java.util.Date;
 import java.util.Map;
 
 public class CSVRecordReader {
 
-    private DateFormat dateParser;
+    private DateTimeFormatter dateParser;
     private NumberFormat numberParser;
 
-    public CSVRecordReader(DateFormat dateParser,
+    public CSVRecordReader(DateTimeFormatter dateParser,
                            NumberFormat numberParser) {
         this.dateParser = dateParser;
         this.numberParser = numberParser;
     }
 
-    public long parseDate(String date) throws ParseException {
-        long time = dateParser.parse(date).getTime();
-        return time;
+    public LocalDate parseDate(String date) throws ParseException {
+        return LocalDate.parse(date, dateParser);
     }
 
     public double parseTick(String tickRate) throws ParseException {
@@ -29,10 +31,10 @@ public class CSVRecordReader {
         return number.doubleValue();
     }
 
-    public Map.Entry<Long, Double> parse(CSVRecord record) throws ParseException {
+    public Map.Entry<LocalDate, Double> parse(CSVRecord record) throws ParseException {
         String date = record.get("data");
         String tickRate = record.get("curs");
-        return new AbstractMap.SimpleEntry<Long, Double>(
+        return new AbstractMap.SimpleEntry<>(
                 parseDate(date),
                 parseTick(tickRate));
     }
