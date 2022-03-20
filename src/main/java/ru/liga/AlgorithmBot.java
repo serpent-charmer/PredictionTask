@@ -4,78 +4,71 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
-import ru.liga.api.DateTooDistantException;
-import ru.liga.api.MissingArgsException;
-import ru.liga.api.PredictorBuildFailedException;
-import ru.liga.impl.CommandEvaluator;
-
-import java.util.List;
+import ru.liga.api.exceptions.MissingArgsException;
+import ru.liga.impl.CommandParser;
+import ru.liga.impl.CommandExecutor;
+import ru.liga.output.GraphResult;
+import ru.liga.output.TextResult;
 
 public class AlgorithmBot {
 
+    private static void sendHelpMessage(TelegramBot bot, long chatId) {
+        String help = "rate <USD|TRY|BGN|EUR>\n" +
+                "-alg <mystic|contemp|linear>\n" +
+                "-period <month|week>\n" +
+                "-output <graph|text>\n";
+        sendMessageFromBot(bot, chatId, help);
+    }
+
+    private static void sendMessageFromBot(TelegramBot bot, long chatId, String msg) {
+        SendMessage action = new SendMessage(chatId, msg);
+        bot.execute(action);
+    }
+
     public static void main(String[] args) {
         String botToken = System.getenv("BOT_TOKEN");
-
         TelegramBot bot = new TelegramBot(botToken);
-
-
         bot.setUpdatesListener(updates -> {
 
             if (updates.size() < 1) {
-                return UpdatesListener.CONFIRMED_UPDATES_ALL;
-            } else {
-                System.out.println(updates);
-                updates.forEach(u -> {
-                    if (u.message() == null) {
+                return UpdatesListener.CONFIRMED_UPDATES_NONE;
+            }
+
+            updates.forEach(u -> {
+                long chatId = u.message().chat().id();
+                if (u.message() == null) {
+                    return;
+                }
+                try {
+                    String cmd = u.message().text();
+                    if (cmd.equals("-help")) {
+                        sendHelpMessage(bot, chatId);
                         return;
                     }
-                    long chatId = u.message().chat().id();
-
-                    CommandEvaluator commandEvaluator = new CommandEvaluator();
-
-                    try {
-
-                        try {
-                            commandEvaluator.parse(u.message().text());
-                        } catch (MissingArgsException e) {
-                            SendMessage action = new SendMessage(chatId, e.getMessage());
-                            bot.execute(action);
-                            return;
-                        } catch (RuntimeException e) {
-                            SendMessage action = new SendMessage(chatId, e.getMessage());
-                            bot.execute(action);
-                            return;
-                        }
-
-
-
-                    try {
-                        Object result = commandEvaluator.run();
-                        if (result instanceof byte[]) {
-                            SendPhoto action = new SendPhoto(chatId, (byte[]) result);
-                            bot.execute(action);
-                        }
-                        if (result instanceof List) {
-                            SendMessage action = new SendMessage(chatId, result.toString());
-                            bot.execute(action);
-                        }
-                    } catch (DateTooDistantException e) {
-                        SendMessage action = new SendMessage(chatId, e.toString());
-                        bot.execute(action);
-                        return;
-                    }
-
-                } catch(PredictorBuildFailedException e){
-                    SendMessage action = new SendMessage(chatId, e.toString());
-                    bot.execute(action);
+                    CommandExecutor executor = CommandParser.parse(cmd);
+                    executor.registerResultHandler(TextResult.class,
+                            (TextResult o) -> {
+                                sendMessageFromBot(bot, chatId, o.get());
+                            });
+                    executor.registerResultHandler(GraphResult.class,
+                            (GraphResult o) -> {
+                                SendPhoto action = new SendPhoto(chatId, o.get());
+                                bot.execute(action);
+                            });
+                    executor.eval();
+                } catch (NullPointerException e) {
+                    e.printStackTrace();
+                } catch (MissingArgsException e) {
+                    sendMessageFromBot(bot, chatId,
+                            String.format("%s\nTry -help command\n", e.getMessage()));
+                } catch (Exception e) {
+//                    e.printStackTrace();
+                    sendMessageFromBot(bot, chatId, e.getMessage());
                 }
             });
+            return UpdatesListener.CONFIRMED_UPDATES_ALL;
+        });
 
-        }
-
-        return UpdatesListener.CONFIRMED_UPDATES_ALL;
-    });
-
-}
+    }
 
 }

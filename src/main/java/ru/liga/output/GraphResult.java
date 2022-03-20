@@ -1,22 +1,22 @@
-package ru.liga.impl.output;
+package ru.liga.output;
 
 import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.Styler;
-import ru.liga.api.AlgorithmOutput;
+import ru.liga.api.AlgorithmResult;
 import ru.liga.impl.RatesResult;
 
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
 
-public class GraphOutput implements AlgorithmOutput<byte[]> {
+public class GraphResult extends AlgorithmResult<byte[]> {
 
     private XYChart chart;
 
-    public GraphOutput() {
+    public GraphResult() {
         chart = new XYChartBuilder()
                 .width(800)
                 .height(600)
@@ -28,7 +28,7 @@ public class GraphOutput implements AlgorithmOutput<byte[]> {
         chart.getStyler().setChartBackgroundColor(Color.LIGHT_GRAY);
     }
 
-    public byte[] output(List<RatesResult> results) {
+    public byte[] process(List<RatesResult> results) {
 
         results.forEach(r -> {
             XYSeries series = chart.addSeries(r.getName(),

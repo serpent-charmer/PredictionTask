@@ -1,4 +1,4 @@
-package ru.liga.api;
+package ru.liga.api.exceptions;
 
 public class PredictorBuildFailedException extends RuntimeException {
 

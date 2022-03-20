@@ -1,8 +1,7 @@
-package ru.liga.impl.algs;
+package ru.liga.algs;
 
 import ru.liga.api.Algorithm;
-import ru.liga.api.DateTooDistantException;
-import ru.liga.impl.DateUtils;
+import ru.liga.utils.DateUtils;
 import ru.liga.impl.RatesResult;
 
 import java.time.LocalDate;
@@ -28,8 +27,7 @@ public class MysticalAlgorithm implements Algorithm {
 
         List<LocalDate> moons = DateUtils.getThreeFullMoons(date);
         double sum = 0;
-        for (LocalDate moon :
-                moons) {
+        for (LocalDate moon : moons) {
             Double rate = DateUtils.findClosestBackwards(rates, moon);
             sum += rate;
         }
@@ -46,10 +44,7 @@ public class MysticalAlgorithm implements Algorithm {
         List<Date> dates = Stream.
                 iterate(date, d -> d.plusDays(1))
                 .limit(period.getDays())
-                .map(d -> {
-                    return Date.from(d.atStartOfDay(
-                            ZoneId.systemDefault()).toInstant());
-                })
+                .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .collect(Collectors.toList());
 
         return new RatesResult("Mystical", dates, doubles);

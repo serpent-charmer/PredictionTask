@@ -1,13 +1,14 @@
-package ru.liga.impl;
+package ru.liga.utils;
 
 import ru.liga.api.Algorithm;
-import ru.liga.api.AlgorithmOutput;
-import ru.liga.impl.algs.ContemporaryAlgorithm;
-import ru.liga.impl.algs.Currency;
-import ru.liga.impl.algs.LinearRegressionAlgorithm;
-import ru.liga.impl.algs.MysticalAlgorithm;
-import ru.liga.impl.output.GraphOutput;
-import ru.liga.impl.output.TextOutput;
+import ru.liga.api.AlgorithmResult;
+import ru.liga.algs.ContemporaryAlgorithm;
+import ru.liga.algs.Currency;
+import ru.liga.algs.LinearRegressionAlgorithm;
+import ru.liga.algs.MysticalAlgorithm;
+import ru.liga.output.GraphResult;
+import ru.liga.output.TextResult;
+import ru.liga.repository.CSVRepository;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -15,37 +16,45 @@ import java.util.Map;
 
 public class TypeFabricParser {
 
+    public static final String WEEK = "week";
+    public static final String MONTH = "month";
+    public static final String GRAPH = "graph";
+    public static final String TEXT = "text";
+    public static final String MYSTIC = "mystic";
+    public static final String CONTEMP = "contemp";
+    public static final String LINEAR = "linear";
+
     public static Algorithm parseAlgorithm(String s) {
         switch(s) {
-            case "mystic":
+            case MYSTIC:
                 return new MysticalAlgorithm();
-            case "contemp":
+            case CONTEMP:
                 return new ContemporaryAlgorithm();
-            case "linear":
+            case LINEAR:
                 return new LinearRegressionAlgorithm();
         }
         throw new RuntimeException("No such algorithm: " + s);
     }
 
 
-    public static AlgorithmOutput parseOutput(String s) {
+    public static AlgorithmResult parseOutput(String s) {
         switch(s) {
-            case "graph": return new GraphOutput();
-            case "text": new TextOutput();
+            case GRAPH: return new GraphResult();
+            case TEXT: new TextResult();
         }
         throw new RuntimeException("No such output: " + s);
     }
 
     public static Period parsePeriod(String s) {
         switch(s) {
-            case "week": return Period.ofDays(7);
-            case "month": return Period.ofDays(30);
+            case WEEK: return Period.ofDays(7);
+            case MONTH: return Period.ofDays(30);
         }
         throw new RuntimeException("No such period: " + s);
     }
 
     public static Map<LocalDate, Double> currencyRepository(Currency currency) {
-        CSVRepository pFactory = CSVRepository.getCSVPredictorFactory();
+        CSVRepository pFactory = CSVRepository.getCSVRepository();
         switch(currency) {
             case EUR: {
                 return pFactory.getMapFromCsvFile("data/EUR_F01_02_2005_T05_03_2022.csv");

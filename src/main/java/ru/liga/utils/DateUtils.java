@@ -1,7 +1,7 @@
-package ru.liga.impl;
+package ru.liga.utils;
 
 import org.shredzone.commons.suncalc.MoonPhase;
-import ru.liga.api.DateTooDistantException;
+import ru.liga.api.exceptions.DateTooDistantException;
 
 import java.time.LocalDate;
 import java.util.*;

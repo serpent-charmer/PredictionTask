@@ -1,8 +1,7 @@
-package ru.liga.impl.algs;
+package ru.liga.algs;
 
 import ru.liga.api.Algorithm;
-import ru.liga.api.PredictionException;
-import ru.liga.impl.DateUtils;
+import ru.liga.utils.DateUtils;
 import ru.liga.impl.RatesResult;
 
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
-package ru.liga.impl.algs;
+package ru.liga.algs;
 
 import ru.liga.api.Algorithm;
-import ru.liga.impl.DateUtils;
+import ru.liga.utils.DateUtils;
 import ru.liga.impl.RatesResult;
 
 import java.time.LocalDate;
@@ -19,8 +19,7 @@ public class LinearRegressionAlgorithm implements Algorithm {
     }
 
     public void select(Map<LocalDate, Double> rates, LocalDate date, Period period) {
-
-        Map<LocalDate, Double> monthRates = DateUtils.getMonth(rates, LocalDate.now());
+        Map<LocalDate, Double> monthRates = DateUtils.getMonth(rates, date);
         double[] x = new double[monthRates.size()];
         double[] y = new double[monthRates.size()];
         Iterator<Map.Entry<LocalDate, Double>> iterator = monthRates.entrySet().iterator();
@@ -31,9 +30,7 @@ public class LinearRegressionAlgorithm implements Algorithm {
             y[i] = entry.getValue();
             ++i;
         }
-
         linearRegression = new LinearRegression(x, y);
-
     }
 
     public RatesResult predict(Map<LocalDate, Double> rates, LocalDate date, Period period) {
@@ -41,13 +38,10 @@ public class LinearRegressionAlgorithm implements Algorithm {
         List<Double> newRates = Stream
                 .iterate(date, d -> d.plusDays(1))
                 .limit(period.getDays())
-                .map(d -> {
-                    dates.add(Date.from(d.atStartOfDay(
-                            ZoneId.systemDefault()).toInstant()));
-                    return linearRegression.predict(d.toEpochDay());
-                })
+                .peek(d -> dates.add(Date.from(d.atStartOfDay(
+                        ZoneId.systemDefault()).toInstant())))
+                .map(d -> linearRegression.predict(d.toEpochDay()))
                 .collect(Collectors.toList());
-
         return new RatesResult("LinearRegression", dates, newRates);
     }
 

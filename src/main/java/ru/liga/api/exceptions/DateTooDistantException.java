@@ -1,6 +1,4 @@
-package ru.liga.api;
-
-import java.util.Date;
+package ru.liga.api.exceptions;
 
 public class DateTooDistantException extends RuntimeException {
 
