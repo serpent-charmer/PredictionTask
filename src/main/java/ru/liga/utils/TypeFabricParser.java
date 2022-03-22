@@ -40,7 +40,7 @@ public class TypeFabricParser {
     public static AlgorithmResult parseOutput(String s) {
         switch(s) {
             case GRAPH: return new GraphResult();
-            case TEXT: new TextResult();
+            case TEXT: return new TextResult();
         }
         throw new RuntimeException("No such output: " + s);
     }
