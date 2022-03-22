@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class CommandExecutor {
 
-    private HashMap<Class, Consumer> consumers;
+    private Map<Class, Consumer> consumers;
 
     private List<Currency> currencyList;
     private LocalDate date;
@@ -56,7 +56,6 @@ public class CommandExecutor {
         LinkedList<RatesResult> results = new LinkedList<>();
         for (Currency currency : currencyList) {
             Map<LocalDate, Double> rates = TypeFabricParser.currencyRepository(currency);
-            algorithm.select(rates, date, period);
             RatesResult rr = algorithm.predict(rates, date, period);
             rr.setName(currency.toString());
             results.add(rr);
