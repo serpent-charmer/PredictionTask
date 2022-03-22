@@ -3,8 +3,9 @@ package ru.liga.repository;
 import org.apache.commons.csv.CSVFormat;
 import ru.liga.api.exceptions.PredictorBuildFailedException;
 
-import java.io.FileReader;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class CSVRepository {
     public static final String NOMINAL = "nominal";
     public static final String CDX = "cdx";
     private CSVFormat format;
-    private DateTimeFormatter dateTimeFormatter;
+    private final static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     public CSVRepository() {
         format = CSVFormat.DEFAULT
@@ -26,12 +27,13 @@ public class CSVRepository {
                 .setSkipHeaderRecord(true)
                 .setDelimiter(";")
                 .build();
-        dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     }
 
     public Map<LocalDate, Double> getMapFromCsvFile(String path) {
         try {
-            return format.parse(new FileReader(path))
+
+            return format.parse(new BufferedReader(new InputStreamReader(
+                    getClass().getResourceAsStream("/" + path))))
                     .stream()
                     .collect(Collectors
                             .toMap(v -> LocalDate.parse(v.get(DATA), dateTimeFormatter),
