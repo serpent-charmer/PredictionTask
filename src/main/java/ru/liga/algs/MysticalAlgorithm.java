@@ -8,20 +8,11 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MysticalAlgorithm implements Algorithm {
-
-    private Random random;
-
-    public MysticalAlgorithm() {
-        random = new Random();
-    }
-
-    public void select(Map<LocalDate, Double> rates, LocalDate date, Period period) {
-
-    }
 
     public RatesResult predict(Map<LocalDate, Double> rates, LocalDate date, Period period) {
 
@@ -35,7 +26,9 @@ public class MysticalAlgorithm implements Algorithm {
         double avg = sum / 3;
 
         double avgTenthPercent = avg * 1 / 10;
-        List<Double> doubles = random.doubles(avg - avgTenthPercent,
+        List<Double> doubles = ThreadLocalRandom
+                .current()
+                .doubles(avg - avgTenthPercent,
                         avg + avgTenthPercent)
                 .limit(period.getDays())
                 .boxed()

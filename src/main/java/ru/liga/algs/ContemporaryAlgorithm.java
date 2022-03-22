@@ -16,15 +16,6 @@ import java.util.stream.Stream;
 
 public class ContemporaryAlgorithm implements Algorithm {
 
-
-    public ContemporaryAlgorithm() {
-
-    }
-
-    public void select(Map<LocalDate, Double> rates, LocalDate date, Period period) {
-
-    }
-
     public RatesResult predict(Map<LocalDate, Double> rates, LocalDate date, Period period) {
         ArrayList<Date> dates = new ArrayList<>();
         List<Double> newRates = Stream.

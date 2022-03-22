@@ -15,9 +15,6 @@ public class LinearRegressionAlgorithm implements Algorithm {
 
     private LinearRegression linearRegression;
 
-    public LinearRegressionAlgorithm() {
-    }
-
     public void select(Map<LocalDate, Double> rates, LocalDate date, Period period) {
         Map<LocalDate, Double> monthRates = DateUtils.getMonth(rates, date);
         double[] x = new double[monthRates.size()];
@@ -34,6 +31,7 @@ public class LinearRegressionAlgorithm implements Algorithm {
     }
 
     public RatesResult predict(Map<LocalDate, Double> rates, LocalDate date, Period period) {
+        select(rates, date, period);
         List<Date> dates = new ArrayList<>();
         List<Double> newRates = Stream
                 .iterate(date, d -> d.plusDays(1))
